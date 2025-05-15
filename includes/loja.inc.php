@@ -46,95 +46,47 @@ echo '</ul>
             </div>
 
             <div class="col-lg-9">
-                <h2 class="h2 pb-4">Filtros Avançados</h2>
-                <form method="GET" action="loja.php" class="mb-4">
+                <!-- Filtros avançados -->
+                <form method="GET" class="mb-4">
                     <div class="row">
-                        <!-- Linha 1 de Filtros -->
-                        <div class="col-md-4 mb-3">
-                            <label for="pesquisa" class="form-label">Pesquisar Artigo</label>
-                            <input type="text" name="pesquisa" id="pesquisa" class="form-control" placeholder="Nome do artigo..." value="<?php echo (isset($_GET['pesquisa']) ? htmlspecialchars($_GET['pesquisa']) : ''); ?>">
+                        <div class="col-md-3 mb-2">
+                            <input type="text" name="pesquisa" class="form-control" placeholder="Pesquisar artigo...">
                         </div>
-                        <div class="col-md-4 mb-3">
-                            <label for="categoria" class="form-label">Categoria</label>
-                            <select name="categoria" id="categoria" class="form-control">
-                                <option value="">Mostrar tudo</option>
-                                <?php
-                                if ($categorias && is_array($categorias)) {
-                                    foreach ($categorias as $cat) {
-                                        $selected = (isset($_GET['categoria']) && $_GET['categoria'] == $cat['id_categoria']) ? 'selected' : '';
-                                        $nome_cat = $_SESSION['ling'] == 'pt' ? $cat['categoria_pt'] : $cat['categoria_en'];
-                                        echo '<option value="' . intval($cat['id_categoria']) . '" ' . $selected . '>' . htmlspecialchars($nome_cat) . '</option>';
-                                    }
-                                }
-                                ?>
+                        <div class="col-md-2 mb-2">
+                            <select name="tamanho" class="form-control">
+                                <option value="">Tamanho</option>
+                                <option value="P">P</option>
+                                <option value="M">M</option>
+                                <option value="G">G</option>
+                                <!-- Adicione mais tamanhos conforme necessário -->
                             </select>
                         </div>
-                        <div class="col-md-4 mb-3">
-                            <label for="tipo" class="form-label">Tipo/Subcategoria</label>
-                            <select name="tipo" id="tipo" class="form-control">
-                                <option value="">Mostrar tudo</option>
-                                <?php
-                                // Assumindo que $tipos foi buscado anteriormente, como $tipos = my_query('SELECT * FROM tipo');
-                                if ($tipos && is_array($tipos)) {
-                                    foreach ($tipos as $tp) {
-                                        $selected = (isset($_GET['tipo']) && $_GET['tipo'] == $tp['id_tipo']) ? 'selected' : '';
-                                        $nome_tp = $_SESSION['ling'] == 'pt' ? $tp['tipo_pt'] : $tp['tipo_eng'];
-                                        echo '<option value="' . intval($tp['id_tipo']) . '" ' . $selected . '>' . htmlspecialchars($nome_tp) . '</option>';
-                                    }
-                                }
-                                ?>
+                        <div class="col-md-2 mb-2">
+                            <select name="cor" class="form-control">
+                                <option value="">Cor</option>
+                                <option value="vermelho">Vermelho</option>
+                                <option value="azul">Azul</option>
+                                <option value="preto">Preto</option>
+                                <!-- Adicione mais cores conforme necessário -->
                             </select>
                         </div>
-                    </div>
-
-                    <div class="row">
-                        <!-- Linha 2 de Filtros -->
-                        <div class="col-md-3 mb-3">
-                            <label for="preco_min" class="form-label">Preço De</label>
-                            <input type="number" name="preco_min" id="preco_min" class="form-control" placeholder="De" value="<?php echo isset($_GET['preco_min']) ? htmlspecialchars($_GET['preco_min']) : ''; ?>" step="0.01">
-                        </div>
-                        <div class="col-md-3 mb-3">
-                            <label for="preco_max" class="form-label">Preço Até</label>
-                            <input type="number" name="preco_max" id="preco_max" class="form-control" placeholder="Até" value="<?php echo isset($_GET['preco_max']) ? htmlspecialchars($_GET['preco_max']) : ''; ?>" step="0.01">
-                        </div>
-                        <div class="col-md-3 mb-3">
-                            <label for="tamanho" class="form-label">Tamanho</label>
-                            <select name="tamanho" id="tamanho" class="form-control">
-                                <option value="">Mostrar tudo</option>
-                                <option value="P" <?php echo (isset($_GET['tamanho']) && $_GET['tamanho'] == 'P') ? 'selected' : ''; ?>>P</option>
-                                <option value="M" <?php echo (isset($_GET['tamanho']) && $_GET['tamanho'] == 'M') ? 'selected' : ''; ?>>M</option>
-                                <option value="G" <?php echo (isset($_GET['tamanho']) && $_GET['tamanho'] == 'G') ? 'selected' : ''; ?>>G</option>
-                                <!-- Adicionar mais tamanhos ou popular dinamicamente se necessário -->
+                        <div class="col-md-2 mb-2">
+                            <select name="genero" class="form-control">
+                                <option value="">Género</option>
+                                <option value="masculino">Masculino</option>
+                                <option value="feminino">Feminino</option>
+                                <option value="unissexo">Unissexo</option>
                             </select>
                         </div>
-                         <div class="col-md-3 mb-3">
-                            <label for="cor" class="form-label">Cor</label>
-                            <select name="cor" id="cor" class="form-control">
-                                <option value="">Mostrar tudo</option>
-                                <option value="vermelho" <?php echo (isset($_GET['cor']) && $_GET['cor'] == 'vermelho') ? 'selected' : ''; ?>>Vermelho</option>
-                                <option value="azul" <?php echo (isset($_GET['cor']) && $_GET['cor'] == 'azul') ? 'selected' : ''; ?>>Azul</option>
-                                <option value="preto" <?php echo (isset($_GET['cor']) && $_GET['cor'] == 'preto') ? 'selected' : ''; ?>>Preto</option>
-                                <!-- Adicionar mais cores ou popular dinamicamente se necessário -->
+                        <div class="col-md-2 mb-2">
+                            <select name="idade" class="form-control">
+                                <option value="">Idade</option>
+                                <option value="crianca">Criança</option>
+                                <option value="adulto">Adulto</option>
                             </select>
                         </div>
-                    </div>
-
-                    <div class="row">
-                        <!-- Linha 3 de Filtros -->
-                        <div class="col-md-4 mb-3">
-                            <label for="genero" class="form-label">Género</label>
-                            <select name="genero" id="genero" class="form-control">
-                                <option value="">Mostrar tudo</option>
-                                <option value="masculino" <?php echo (isset($_GET['genero']) && $_GET['genero'] == 'masculino') ? 'selected' : ''; ?>>Masculino</option>
-                                <option value="feminino" <?php echo (isset($_GET['genero']) && $_GET['genero'] == 'feminino') ? 'selected' : ''; ?>>Feminino</option>
-                                <option value="unissexo" <?php echo (isset($_GET['genero']) && $_GET['genero'] == 'unissexo') ? 'selected' : ''; ?>>Unissexo</option>
-                            </select>
-                        </div>
-                        <div class="col-md-4 mb-3 align-self-end">
+                        <div class="col-md-1 mb-2">
                             <button type="submit" class="btn btn-primary w-100">Filtrar</button>
-                        </div>
-                         <div class="col-md-4 mb-3 align-self-end">
-                            <a href="loja.php" class="btn btn-secondary w-100">Limpar Filtros</a>
                         </div>
                     </div>
                 </form>
