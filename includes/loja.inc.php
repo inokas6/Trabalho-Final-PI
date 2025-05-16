@@ -4,7 +4,7 @@ include 'header.inc.php';
 echo '<body>';
 include 'nav.inc.php';
 
-// Conteúdo da página de loja
+// Conteúdo da página
 echo '
     <!-- Start Content -->
     <div class="container py-5">
@@ -13,7 +13,7 @@ echo '
                 <h1 class="h2 pb-4">Categorias</h1>
                 <ul class="list-unstyled templatemo-accordion">';
 
-// Buscar categorias do banco de dados
+//Categorias da base de dados
 $categorias = my_query('SELECT * FROM categorias');
 
 if($categorias && is_array($categorias)) {
@@ -27,7 +27,7 @@ if($categorias && is_array($categorias)) {
                     </a>
                     <ul class="collapse show list-unstyled pl-3">';
             
-            // Buscar tipos de produtos para esta categoria
+            // tipos de produtos para esta categoria
             $tipos = my_query('SELECT * FROM tipo');
             
             if($tipos && is_array($tipos)) {
@@ -46,7 +46,7 @@ echo '</ul>
             </div>
 
             <div class="col-lg-9">
-                <!-- Filtros avançados -->
+                <!-- Filtros -->
                 <form method="GET" class="mb-4">
                     <div class="row">
                         <div class="col-md-3 mb-2">
@@ -55,9 +55,9 @@ echo '</ul>
                         <div class="col-md-2 mb-2">
                             <select name="tamanho" class="form-control">
                                 <option value="">Tamanho</option>
-                                <option value="P">P</option>
+                                <option value="S">P</option>
                                 <option value="M">M</option>
-                                <option value="G">G</option>
+                                <option value="L">G</option>
                                 <!-- Adicione mais tamanhos conforme necessário -->
                             </select>
                         </div>
@@ -116,7 +116,7 @@ echo '</ul>
                 </div>
                 <div class="row">';
 
-// Buscar produtos do banco de dados
+// produtos da base de dados
 $produtos = my_query('SELECT p.*, t.tipo_pt, t.tipo_eng, c.categoria_pt, c.categoria_en 
                      FROM produtos p 
                      JOIN tipo t ON p.id_tipo = t.id_tipo 
@@ -128,7 +128,7 @@ if($produtos && is_array($produtos)) {
             $nome_produto = $_SESSION['ling'] == 'pt' ? $produto['nome_pt'] : $produto['nome_en'];
             $descricao = $_SESSION['ling'] == 'pt' ? $produto['descricao_pt'] : $produto['descricao_en'];
             
-            // Buscar tamanhos do produto
+            //tamanhos
             $tamanhos = my_query('SELECT t.tamanho 
                                 FROM produto_tamanho pt 
                                 JOIN tamanho t ON pt.id_tamanho = t.id_tamanho 

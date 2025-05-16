@@ -1,3 +1,4 @@
+//linguagens com seo
 document.getElementById("ling").addEventListener("change", function() {
     const valor = this.value;
     const url = new URL(window.location.href);

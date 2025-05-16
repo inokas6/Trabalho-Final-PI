@@ -1,5 +1,5 @@
 <?php
-
+//pagina inicial
 include 'header.inc.php';
 echo '<body>';
 include 'nav.inc.php';
