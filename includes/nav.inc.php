@@ -45,5 +45,3 @@ echo '<nav class="navbar navbar-expand-lg navbar-light shadow">
 
         </div>
     </nav>';
-
-

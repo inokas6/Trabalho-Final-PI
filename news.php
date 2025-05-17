@@ -1,31 +1,9 @@
 <?php
     include  'includes/config.inc.php';
     include  'includes/header.inc.php';
+    include 'includes/nav.inc.php';
 ?>
 
-    <!-- Start Banner Hero -->
-    <div id="template-mo-zay-hero-carousel" class="carousel slide" data-bs-ride="carousel">
-        <div class="carousel-inner">
-            <div class="carousel-item active">
-                <div class="container">
-                    <div class="row p-5">
-                        <div class="mx-auto col-md-8 col-lg-6 order-lg-last">
-                            <img class="img-fluid" src="assets/img/banner_img_01.jpg" alt="">
-                        </div>
-                        <div class="col-lg-6 mb-0 d-flex align-items-center">
-                            <div class="text-align-left align-self-center">
-                                <h1 class="h1">Notícias e Atualizações</h1>
-                                <p>
-                                    Fique por dentro das últimas novidades, dicas e informações sobre produtos naturais e orgânicos.
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- End Banner Hero -->
 
     <!-- Start Notícias Section -->
     <section class="container py-5">
