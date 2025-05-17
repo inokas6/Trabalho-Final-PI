@@ -10,61 +10,30 @@ $tipo = isset($_GET['tipo']) ? intval($_GET['tipo']) : '';
 $tamanho = isset($_GET['tamanho']) ? intval($_GET['tamanho']) : '';
 $preco_min = isset($_GET['preco_min']) && $_GET['preco_min'] !== '' ? floatval($_GET['preco_min']) : '';
 $preco_max = isset($_GET['preco_max']) && $_GET['preco_max'] !== '' ? floatval($_GET['preco_max']) : '';
+$ordenar = isset($_GET['ordenar']) ? $_GET['ordenar'] : '';
+
+// Mapeamento das opções de ordenação
+$opcoes_ordenacao = [
+    '' => ($_SESSION['ling'] == 'pt' ? 'Ordenar por...' : 'Sort by...'),
+    'nome_az' => ($_SESSION['ling'] == 'pt' ? 'Nome (A-Z)' : 'Name (A-Z)'),
+    'nome_za' => ($_SESSION['ling'] == 'pt' ? 'Nome (Z-A)' : 'Name (Z-A)'),
+    'preco_asc' => ($_SESSION['ling'] == 'pt' ? 'Mais barato' : 'Lowest price'),
+    'preco_desc' => ($_SESSION['ling'] == 'pt' ? 'Mais caro' : 'Highest price'),
+    'categoria_az' => ($_SESSION['ling'] == 'pt' ? 'Categoria (A-Z)' : 'Category (A-Z)'),
+    'tipo_az' => ($_SESSION['ling'] == 'pt' ? 'Tipo (A-Z)' : 'Type (A-Z)'),
+];
 
 // Conteúdo da página
-echo '
-    <!-- Start Content -->
-    <div class="container py-5">
+echo '    <div class="container py-5">
         <div class="row">
-            <div class="col-lg-3">
-                <h1 class="h2 pb-4">' . ($_SESSION['ling'] == 'pt' ? 'Categorias' : 'Categories') . '</h1>
-                <ul class="list-unstyled templatemo-accordion">';
-
-//Categorias da base de dados
-$categorias = my_query('SELECT * FROM categorias');
-
-if($categorias && is_array($categorias)) {
-    foreach($categorias as $cat) {
-        if(isset($cat['id_categoria'])) {
-            $nome_categoria = $_SESSION['ling'] == 'pt' ? $cat['categoria_pt'] : $cat['categoria_en'];
-            $active = ($categoria == $cat['id_categoria']) ? 'active' : '';
-            echo '<li class="pb-3">
-                    <a class="collapsed d-flex justify-content-between h3 text-decoration-none ' . $active . '" href="?categoria=' . $cat['id_categoria'] . '">
-                        ' . htmlspecialchars($nome_categoria) . '
-                        <i class="fa fa-fw fa-chevron-circle-down mt-1"></i>
-                    </a>
-                    <ul class="collapse show list-unstyled pl-3">';
-            
-            // tipos de produtos para esta categoria
-            $tipos = my_query('SELECT DISTINCT t.* FROM tipo t 
-                             INNER JOIN produtos p ON t.id_tipo = p.id_tipo 
-                             WHERE p.id_categoria = ' . $cat['id_categoria']);
-            
-            if($tipos && is_array($tipos)) {
-                foreach($tipos as $t) {
-                    $nome_tipo = $_SESSION['ling'] == 'pt' ? $t['tipo_pt'] : $t['tipo_eng'];
-                    $active = ($tipo == $t['id_tipo']) ? 'active' : '';
-                    echo '<li><a class="text-decoration-none ' . $active . '" href="?categoria=' . $cat['id_categoria'] . '&tipo=' . $t['id_tipo'] . '">' . htmlspecialchars($nome_tipo) . '</a></li>';
-                }
-            }
-            
-            echo '</ul></li>';
-        }
-    }
-}
-
-echo '</ul>
-            </div>
-
-            <div class="col-lg-9">
-                <!-- Filtros -->
+            <div class="col-lg-12">
                 <form method="GET" class="mb-4">
                     <div class="row">
                         <div class="col-md-3 mb-2">
                             <select name="categoria" class="form-control">
                                 <option value="">' . ($_SESSION['ling'] == 'pt' ? 'Todas as Categorias' : 'All Categories') . '</option>';
-                                
-// Categorias para o select
+
+$categorias = my_query('SELECT * FROM categorias');
 if($categorias && is_array($categorias)) {
     foreach($categorias as $cat) {
         $selected = ($categoria == $cat['id_categoria']) ? 'selected' : '';
@@ -78,8 +47,7 @@ echo '</select>
                         <div class="col-md-3 mb-2">
                             <select name="tipo" class="form-control">
                                 <option value="">' . ($_SESSION['ling'] == 'pt' ? 'Todos os Tipos' : 'All Types') . '</option>';
-                                
-// Tipos para o select
+
 $tipos = my_query('SELECT * FROM tipo');
 if($tipos && is_array($tipos)) {
     foreach($tipos as $t) {
@@ -94,8 +62,7 @@ echo '</select>
                         <div class="col-md-2 mb-2">
                             <select name="tamanho" class="form-control">
                                 <option value="">' . ($_SESSION['ling'] == 'pt' ? 'Tamanho' : 'Size') . '</option>';
-                                
-// Tamanhos disponíveis
+
 $tamanhos = my_query('SELECT * FROM tamanho');
 if($tamanhos && is_array($tamanhos)) {
     foreach($tamanhos as $tam) {
@@ -116,35 +83,79 @@ echo '</select>
                             <button type="submit" class="btn btn-primary w-100">' . ($_SESSION['ling'] == 'pt' ? 'Filtrar' : 'Filter') . '</button>
                         </div>
                     </div>
-                </form>
+                </form>';
 
-                <div class="row">';
+// Formulário de ordenação
+echo '<form method="GET" class="mb-4" id="form-ordenar">
+    <input type="hidden" name="categoria" value="' . $categoria . '">
+    <input type="hidden" name="tipo" value="' . $tipo . '">
+    <input type="hidden" name="tamanho" value="' . $tamanho . '">
+    <input type="hidden" name="preco_min" value="' . ($preco_min !== '' ? $preco_min : '') . '">
+    <input type="hidden" name="preco_max" value="' . ($preco_max !== '' ? $preco_max : '') . '">
+    <div class="row align-items-center">
+        <div class="col-auto">
+            <label for="ordenar" class="mb-0"><strong>' . ($_SESSION['ling'] == 'pt' ? 'Ordenar por:' : 'Sort by:') . '</strong></label>
+        </div>
+        <div class="col">
+            <select name="ordenar" id="ordenar" class="form-control" onchange="document.getElementById(\'form-ordenar\').submit();">';
 
-// Construir a query base para produtos
+foreach($opcoes_ordenacao as $valor => $texto) {
+    $selected = ($ordenar == $valor) ? 'selected' : '';
+    echo '<option value="' . $valor . '" ' . $selected . '>' . $texto . '</option>';
+}
+
+echo '</select>
+        </div>
+    </div>
+</form>';
+
+echo '<div class="row">';
+
 $query = 'SELECT p.*, t.tipo_pt, t.tipo_eng, c.categoria_pt, c.categoria_en 
           FROM produtos p 
           JOIN tipo t ON p.id_tipo = t.id_tipo 
           JOIN categorias c ON p.id_categoria = c.id_categoria 
           WHERE 1=1';
 
-// Adicionar filtros à query
 if($categoria) {
     $query .= ' AND p.id_categoria = ' . $categoria;
 }
 if($tipo) {
     $query .= ' AND p.id_tipo = ' . $tipo;
 }
-if($preco_min) {
+if($preco_min !== '') {
     $query .= ' AND p.preco >= ' . $preco_min;
 }
-if($preco_max) {
+if($preco_max !== '') {
     $query .= ' AND p.preco <= ' . $preco_max;
 }
 if($tamanho) {
     $query .= ' AND p.id_produto IN (SELECT id_produto FROM produto_tamanho WHERE id_tamanho = ' . $tamanho . ')';
 }
 
-// Executar a query
+switch($ordenar) {
+    case 'nome_az':
+        $query .= ($_SESSION['ling'] == 'pt') ? ' ORDER BY p.nome_pt ASC' : ' ORDER BY p.nome_en ASC';
+        break;
+    case 'nome_za':
+        $query .= ($_SESSION['ling'] == 'pt') ? ' ORDER BY p.nome_pt DESC' : ' ORDER BY p.nome_en DESC';
+        break;
+    case 'preco_asc':
+        $query .= ' ORDER BY p.preco ASC';
+        break;
+    case 'preco_desc':
+        $query .= ' ORDER BY p.preco DESC';
+        break;
+    case 'categoria_az':
+        $query .= ($_SESSION['ling'] == 'pt') ? ' ORDER BY c.categoria_pt ASC' : ' ORDER BY c.categoria_en ASC';
+        break;
+    case 'tipo_az':
+        $query .= ($_SESSION['ling'] == 'pt') ? ' ORDER BY t.tipo_pt ASC' : ' ORDER BY t.tipo_eng ASC';
+        break;
+    default:
+        $query .= ' ORDER BY p.id_produto DESC';
+}
+
 $produtos = my_query($query);
 
 if($produtos && is_array($produtos)) {
@@ -152,20 +163,16 @@ if($produtos && is_array($produtos)) {
         if(isset($produto['id_produto'])) {
             $nome_produto = $_SESSION['ling'] == 'pt' ? $produto['nome_pt'] : $produto['nome_en'];
             $descricao = $_SESSION['ling'] == 'pt' ? $produto['descricao_pt'] : $produto['descricao_en'];
-            
-            //tamanhos
-            $tamanhos = my_query('SELECT t.tamanho 
-                                FROM produto_tamanho pt 
-                                JOIN tamanho t ON pt.id_tamanho = t.id_tamanho 
-                                WHERE pt.id_produto = ' . intval($produto['id_produto']));
-            
+
+            $tamanhos = my_query('SELECT t.tamanho FROM produto_tamanho pt JOIN tamanho t ON pt.id_tamanho = t.id_tamanho WHERE pt.id_produto = ' . intval($produto['id_produto']));
+
             $tamanhos_disponiveis = '';
             if($tamanhos && is_array($tamanhos)) {
                 foreach($tamanhos as $tamanho) {
                     $tamanhos_disponiveis .= '<li>' . htmlspecialchars($tamanho['tamanho']) . '</li>';
                 }
             }
-            
+
             echo '<div class="col-md-4">
                     <div class="card mb-4 product-wap rounded-0">
                         <div class="card rounded-0">
@@ -198,13 +205,10 @@ if($produtos && is_array($produtos)) {
 echo '</div>
             </div>
         </div>
-    </div>
-    <!-- End Content -->';
+    </div>';
 
 include 'footer.inc.php';
-
 echo '</body>';
 include 'scripts.inc.php';
-
 echo '</html>';
-?> 
+?>
