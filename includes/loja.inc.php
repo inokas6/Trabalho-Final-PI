@@ -8,8 +8,8 @@ include 'nav.inc.php';
 $categoria = isset($_GET['categoria']) ? intval($_GET['categoria']) : '';
 $tipo = isset($_GET['tipo']) ? intval($_GET['tipo']) : '';
 $tamanho = isset($_GET['tamanho']) ? intval($_GET['tamanho']) : '';
-$preco_min = isset($_GET['preco_min']) ? floatval($_GET['preco_min']) : '';
-$preco_max = isset($_GET['preco_max']) ? floatval($_GET['preco_max']) : '';
+$preco_min = isset($_GET['preco_min']) && $_GET['preco_min'] !== '' ? floatval($_GET['preco_min']) : '';
+$preco_max = isset($_GET['preco_max']) && $_GET['preco_max'] !== '' ? floatval($_GET['preco_max']) : '';
 
 // Conteúdo da página
 echo '
@@ -107,10 +107,10 @@ if($tamanhos && is_array($tamanhos)) {
 echo '</select>
                         </div>
                         <div class="col-md-2 mb-2">
-                            <input type="number" name="preco_min" class="form-control" placeholder="' . ($_SESSION['ling'] == 'pt' ? 'Mín' : 'Min') . '" value="' . $preco_min . '">
+                            <input type="number" name="preco_min" class="form-control" placeholder="' . ($_SESSION['ling'] == 'pt' ? 'Mín' : 'Min') . '" value="' . ($preco_min !== '' ? $preco_min : '') . '">
                         </div>
                         <div class="col-md-2 mb-2">
-                            <input type="number" name="preco_max" class="form-control" placeholder="' . ($_SESSION['ling'] == 'pt' ? 'Máx' : 'Max') . '" value="' . $preco_max . '">
+                            <input type="number" name="preco_max" class="form-control" placeholder="' . ($_SESSION['ling'] == 'pt' ? 'Máx' : 'Max') . '" value="' . ($preco_max !== '' ? $preco_max : '') . '">
                         </div>
                         <div class="col-md-12 mb-2">
                             <button type="submit" class="btn btn-primary w-100">' . ($_SESSION['ling'] == 'pt' ? 'Filtrar' : 'Filter') . '</button>
