@@ -4,36 +4,47 @@ include 'header.inc.php';
 echo '<body>';
 include 'nav.inc.php';
 
+// Obter parâmetros de filtro
+$categoria = isset($_GET['categoria']) ? intval($_GET['categoria']) : '';
+$tipo = isset($_GET['tipo']) ? intval($_GET['tipo']) : '';
+$tamanho = isset($_GET['tamanho']) ? intval($_GET['tamanho']) : '';
+$preco_min = isset($_GET['preco_min']) ? floatval($_GET['preco_min']) : '';
+$preco_max = isset($_GET['preco_max']) ? floatval($_GET['preco_max']) : '';
+
 // Conteúdo da página
 echo '
     <!-- Start Content -->
     <div class="container py-5">
         <div class="row">
             <div class="col-lg-3">
-                <h1 class="h2 pb-4">Categorias</h1>
+                <h1 class="h2 pb-4">' . ($_SESSION['ling'] == 'pt' ? 'Categorias' : 'Categories') . '</h1>
                 <ul class="list-unstyled templatemo-accordion">';
 
 //Categorias da base de dados
 $categorias = my_query('SELECT * FROM categorias');
 
 if($categorias && is_array($categorias)) {
-    foreach($categorias as $categoria) {
-        if(isset($categoria['id_categoria'])) {
-            $nome_categoria = $_SESSION['ling'] == 'pt' ? $categoria['categoria_pt'] : $categoria['categoria_en'];
+    foreach($categorias as $cat) {
+        if(isset($cat['id_categoria'])) {
+            $nome_categoria = $_SESSION['ling'] == 'pt' ? $cat['categoria_pt'] : $cat['categoria_en'];
+            $active = ($categoria == $cat['id_categoria']) ? 'active' : '';
             echo '<li class="pb-3">
-                    <a class="collapsed d-flex justify-content-between h3 text-decoration-none" href="#">
+                    <a class="collapsed d-flex justify-content-between h3 text-decoration-none ' . $active . '" href="?categoria=' . $cat['id_categoria'] . '">
                         ' . htmlspecialchars($nome_categoria) . '
                         <i class="fa fa-fw fa-chevron-circle-down mt-1"></i>
                     </a>
                     <ul class="collapse show list-unstyled pl-3">';
             
             // tipos de produtos para esta categoria
-            $tipos = my_query('SELECT * FROM tipo');
+            $tipos = my_query('SELECT DISTINCT t.* FROM tipo t 
+                             INNER JOIN produtos p ON t.id_tipo = p.id_tipo 
+                             WHERE p.id_categoria = ' . $cat['id_categoria']);
             
             if($tipos && is_array($tipos)) {
-                foreach($tipos as $tipo) {
-                    $nome_tipo = $_SESSION['ling'] == 'pt' ? $tipo['tipo_pt'] : $tipo['tipo_eng'];
-                    echo '<li><a class="text-decoration-none" href="#">' . htmlspecialchars($nome_tipo) . '</a></li>';
+                foreach($tipos as $t) {
+                    $nome_tipo = $_SESSION['ling'] == 'pt' ? $t['tipo_pt'] : $t['tipo_eng'];
+                    $active = ($tipo == $t['id_tipo']) ? 'active' : '';
+                    echo '<li><a class="text-decoration-none ' . $active . '" href="?categoria=' . $cat['id_categoria'] . '&tipo=' . $t['id_tipo'] . '">' . htmlspecialchars($nome_tipo) . '</a></li>';
                 }
             }
             
@@ -50,77 +61,91 @@ echo '</ul>
                 <form method="GET" class="mb-4">
                     <div class="row">
                         <div class="col-md-3 mb-2">
-                            <input type="text" name="pesquisa" class="form-control" placeholder="Pesquisar artigo...">
+                            <select name="categoria" class="form-control">
+                                <option value="">' . ($_SESSION['ling'] == 'pt' ? 'Todas as Categorias' : 'All Categories') . '</option>';
+                                
+// Categorias para o select
+if($categorias && is_array($categorias)) {
+    foreach($categorias as $cat) {
+        $selected = ($categoria == $cat['id_categoria']) ? 'selected' : '';
+        $nome_categoria = $_SESSION['ling'] == 'pt' ? $cat['categoria_pt'] : $cat['categoria_en'];
+        echo '<option value="' . $cat['id_categoria'] . '" ' . $selected . '>' . htmlspecialchars($nome_categoria) . '</option>';
+    }
+}
+
+echo '</select>
+                        </div>
+                        <div class="col-md-3 mb-2">
+                            <select name="tipo" class="form-control">
+                                <option value="">' . ($_SESSION['ling'] == 'pt' ? 'Todos os Tipos' : 'All Types') . '</option>';
+                                
+// Tipos para o select
+$tipos = my_query('SELECT * FROM tipo');
+if($tipos && is_array($tipos)) {
+    foreach($tipos as $t) {
+        $selected = ($tipo == $t['id_tipo']) ? 'selected' : '';
+        $nome_tipo = $_SESSION['ling'] == 'pt' ? $t['tipo_pt'] : $t['tipo_eng'];
+        echo '<option value="' . $t['id_tipo'] . '" ' . $selected . '>' . htmlspecialchars($nome_tipo) . '</option>';
+    }
+}
+
+echo '</select>
                         </div>
                         <div class="col-md-2 mb-2">
                             <select name="tamanho" class="form-control">
-                                <option value="">Tamanho</option>
-                                <option value="S">P</option>
-                                <option value="M">M</option>
-                                <option value="L">G</option>
-                                <!-- Adicione mais tamanhos conforme necessário -->
-                            </select>
+                                <option value="">' . ($_SESSION['ling'] == 'pt' ? 'Tamanho' : 'Size') . '</option>';
+                                
+// Tamanhos disponíveis
+$tamanhos = my_query('SELECT * FROM tamanho');
+if($tamanhos && is_array($tamanhos)) {
+    foreach($tamanhos as $tam) {
+        $selected = ($tamanho == $tam['id_tamanho']) ? 'selected' : '';
+        echo '<option value="' . $tam['id_tamanho'] . '" ' . $selected . '>' . htmlspecialchars($tam['tamanho']) . '</option>';
+    }
+}
+
+echo '</select>
                         </div>
                         <div class="col-md-2 mb-2">
-                            <select name="cor" class="form-control">
-                                <option value="">Cor</option>
-                                <option value="vermelho">Vermelho</option>
-                                <option value="azul">Azul</option>
-                                <option value="preto">Preto</option>
-                                <!-- Adicione mais cores conforme necessário -->
-                            </select>
+                            <input type="number" name="preco_min" class="form-control" placeholder="' . ($_SESSION['ling'] == 'pt' ? 'Mín' : 'Min') . '" value="' . $preco_min . '">
                         </div>
                         <div class="col-md-2 mb-2">
-                            <select name="genero" class="form-control">
-                                <option value="">Género</option>
-                                <option value="masculino">Masculino</option>
-                                <option value="feminino">Feminino</option>
-                                <option value="unissexo">Unissexo</option>
-                            </select>
+                            <input type="number" name="preco_max" class="form-control" placeholder="' . ($_SESSION['ling'] == 'pt' ? 'Máx' : 'Max') . '" value="' . $preco_max . '">
                         </div>
-                        <div class="col-md-2 mb-2">
-                            <select name="idade" class="form-control">
-                                <option value="">Idade</option>
-                                <option value="crianca">Criança</option>
-                                <option value="adulto">Adulto</option>
-                            </select>
-                        </div>
-                        <div class="col-md-1 mb-2">
-                            <button type="submit" class="btn btn-primary w-100">Filtrar</button>
+                        <div class="col-md-12 mb-2">
+                            <button type="submit" class="btn btn-primary w-100">' . ($_SESSION['ling'] == 'pt' ? 'Filtrar' : 'Filter') . '</button>
                         </div>
                     </div>
                 </form>
-                <div class="row">
-                    <div class="col-md-6">
-                        <ul class="list-inline shop-top-menu pb-3 pt-1">
-                            <li class="list-inline-item">
-                                <a class="h3 text-dark text-decoration-none mr-3" href="#">Todos</a>
-                            </li>
-                            <li class="list-inline-item">
-                                <a class="h3 text-dark text-decoration-none mr-3" href="#">Masculino</a>
-                            </li>
-                            <li class="list-inline-item">
-                                <a class="h3 text-dark text-decoration-none" href="#">Feminino</a>
-                            </li>
-                        </ul>
-                    </div>
-                    <div class="col-md-6 pb-4">
-                        <div class="d-flex">
-                            <select class="form-control">
-                                <option>Destaque</option>
-                                <option>A a Z</option>
-                                <option>Item</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
+
                 <div class="row">';
 
-// produtos da base de dados
-$produtos = my_query('SELECT p.*, t.tipo_pt, t.tipo_eng, c.categoria_pt, c.categoria_en 
-                     FROM produtos p 
-                     JOIN tipo t ON p.id_tipo = t.id_tipo 
-                     JOIN categorias c ON p.id_categoria = c.id_categoria');
+// Construir a query base para produtos
+$query = 'SELECT p.*, t.tipo_pt, t.tipo_eng, c.categoria_pt, c.categoria_en 
+          FROM produtos p 
+          JOIN tipo t ON p.id_tipo = t.id_tipo 
+          JOIN categorias c ON p.id_categoria = c.id_categoria 
+          WHERE 1=1';
+
+// Adicionar filtros à query
+if($categoria) {
+    $query .= ' AND p.id_categoria = ' . $categoria;
+}
+if($tipo) {
+    $query .= ' AND p.id_tipo = ' . $tipo;
+}
+if($preco_min) {
+    $query .= ' AND p.preco >= ' . $preco_min;
+}
+if($preco_max) {
+    $query .= ' AND p.preco <= ' . $preco_max;
+}
+if($tamanho) {
+    $query .= ' AND p.id_produto IN (SELECT id_produto FROM produto_tamanho WHERE id_tamanho = ' . $tamanho . ')';
+}
+
+// Executar a query
+$produtos = my_query($query);
 
 if($produtos && is_array($produtos)) {
     foreach($produtos as $produto) {
@@ -157,36 +182,20 @@ if($produtos && is_array($produtos)) {
                             <a href="shop-single.php?id=' . intval($produto['id_produto']) . '" class="h3 text-decoration-none">' . htmlspecialchars($nome_produto) . '</a>
                             <ul class="w-100 list-unstyled d-flex justify-content-between mb-0">
                                 <li>' . $tamanhos_disponiveis . '</li>
-                                <li class="pt-2">
-                                    <span class="product-color-dot color-dot-red float-left rounded-circle ml-1"></span>
-                                    <span class="product-color-dot color-dot-blue float-left rounded-circle ml-1"></span>
-                                    <span class="product-color-dot color-dot-black float-left rounded-circle ml-1"></span>
-                                    <span class="product-color-dot color-dot-light float-left rounded-circle ml-1"></span>
-                                    <span class="product-color-dot color-dot-green float-left rounded-circle ml-1"></span>
-                                </li>
                             </ul>
-                            <p class="text-center mb-0">R$ ' . number_format(floatval($produto['preco']), 2, ',', '.') . '</p>
+                            <p class="text-center mb-0">€' . number_format(floatval($produto['preco']), 2, ',', '.') . '</p>
                         </div>
                     </div>
                 </div>';
         }
     }
+} else {
+    echo '<div class="col-12 text-center">
+            <p>' . ($_SESSION['ling'] == 'pt' ? 'Nenhum produto encontrado.' : 'No products found.') . '</p>
+          </div>';
 }
 
 echo '</div>
-                <div div="row">
-                    <ul class="pagination pagination-lg justify-content-end">
-                        <li class="page-item disabled">
-                            <a class="page-link active rounded-0 mr-3 shadow-sm border-top-0 border-left-0" href="#" tabindex="-1">1</a>
-                        </li>
-                        <li class="page-item">
-                            <a class="page-link rounded-0 mr-3 shadow-sm border-top-0 border-left-0 text-dark" href="#">2</a>
-                        </li>
-                        <li class="page-item">
-                            <a class="page-link rounded-0 shadow-sm border-top-0 border-left-0 text-dark" href="#">3</a>
-                        </li>
-                    </ul>
-                </div>
             </div>
         </div>
     </div>
