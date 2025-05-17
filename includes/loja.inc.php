@@ -11,6 +11,7 @@ $tamanho = isset($_GET['tamanho']) ? intval($_GET['tamanho']) : '';
 $preco_min = isset($_GET['preco_min']) && $_GET['preco_min'] !== '' ? floatval($_GET['preco_min']) : '';
 $preco_max = isset($_GET['preco_max']) && $_GET['preco_max'] !== '' ? floatval($_GET['preco_max']) : '';
 $ordenar = isset($_GET['ordenar']) ? $_GET['ordenar'] : '';
+$view = isset($_GET['view']) && $_GET['view'] === 'list' ? 'list' : 'grid';
 
 // Mapeamento das opções de ordenação
 $opcoes_ordenacao = [
@@ -86,18 +87,15 @@ echo '</select>
                 </form>';
 
 // Formulário de ordenação
-echo '<form method="GET" class="mb-4" id="form-ordenar">
-    <input type="hidden" name="categoria" value="' . $categoria . '">
-    <input type="hidden" name="tipo" value="' . $tipo . '">
-    <input type="hidden" name="tamanho" value="' . $tamanho . '">
-    <input type="hidden" name="preco_min" value="' . ($preco_min !== '' ? $preco_min : '') . '">
-    <input type="hidden" name="preco_max" value="' . ($preco_max !== '' ? $preco_max : '') . '">
-    <div class="row align-items-center">
-        <div class="col-auto">
-            <label for="ordenar" class="mb-0"><strong>' . ($_SESSION['ling'] == 'pt' ? 'Ordenar por:' : 'Sort by:') . '</strong></label>
-        </div>
-        <div class="col">
-            <select name="ordenar" id="ordenar" class="form-control" onchange="document.getElementById(\'form-ordenar\').submit();">';
+echo '<form method="GET" class="mb-4 d-flex align-items-center justify-content-between" id="form-ordenar">
+    <div>
+        <input type="hidden" name="categoria" value="' . $categoria . '">
+        <input type="hidden" name="tipo" value="' . $tipo . '">
+        <input type="hidden" name="tamanho" value="' . $tamanho . '">
+        <input type="hidden" name="preco_min" value="' . ($preco_min !== '' ? $preco_min : '') . '">
+        <input type="hidden" name="preco_max" value="' . ($preco_max !== '' ? $preco_max : '') . '">
+        <label for="ordenar" class="mb-0 mr-2"><strong>' . ($_SESSION['ling'] == 'pt' ? 'Ordenar por:' : 'Sort by:') . '</strong></label>
+        <select name="ordenar" id="ordenar" class="form-control d-inline-block w-auto" onchange="document.getElementById(\'form-ordenar\').submit();">';
 
 foreach($opcoes_ordenacao as $valor => $texto) {
     $selected = ($ordenar == $valor) ? 'selected' : '';
@@ -105,11 +103,27 @@ foreach($opcoes_ordenacao as $valor => $texto) {
 }
 
 echo '</select>
-        </div>
-    </div>
-</form>';
+    </div>';
 
-echo '<div class="row">';
+// Botões de visualização
+$baseUrl = strtok($_SERVER["REQUEST_URI"], '?');
+$queryString = $_GET;
+$queryString['view'] = 'grid';
+$gridUrl = $baseUrl . '?' . http_build_query($queryString);
+$queryString['view'] = 'list';
+$listUrl = $baseUrl . '?' . http_build_query($queryString);
+
+echo '<div class="view-toggle ml-3">
+    <a href="' . htmlspecialchars($gridUrl) . '" class="mr-2' . ($view == 'grid' ? ' active' : '') . '" title="' . ($_SESSION['ling'] == 'pt' ? 'Mosaico' : 'Grid') . '">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="' . ($view == 'grid' ? '#003c3c' : '#8ca0a0') . '" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+    </a>
+    <a href="' . htmlspecialchars($listUrl) . '" class="' . ($view == 'list' ? ' active' : '') . '" title="' . ($_SESSION['ling'] == 'pt' ? 'Lista' : 'List') . '">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="' . ($view == 'list' ? '#003c3c' : '#8ca0a0') . '" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="3"/><rect x="3" y="10.5" width="18" height="3"/><rect x="3" y="16" width="18" height="3"/></svg>
+    </a>
+</div>';
+echo '</form>';
+
+echo '<div class="row" id="produtos-listagem">';
 
 $query = 'SELECT p.*, t.tipo_pt, t.tipo_eng, c.categoria_pt, c.categoria_en 
           FROM produtos p 
@@ -173,27 +187,48 @@ if($produtos && is_array($produtos)) {
                 }
             }
 
-            echo '<div class="col-md-4">
-                    <div class="card mb-4 product-wap rounded-0">
-                        <div class="card rounded-0">
-                            <img class="card-img rounded-0 img-fluid" src="assets/img/product_1.jpg">
-                            <div class="card-img-overlay rounded-0 product-overlay d-flex align-items-center justify-content-center">
-                                <ul class="list-unstyled">
-                                    <li><a class="btn btn-success text-white" href="shop-single.php?id=' . intval($produto['id_produto']) . '"><i class="far fa-heart"></i></a></li>
-                                    <li><a class="btn btn-success text-white mt-2" href="shop-single.php?id=' . intval($produto['id_produto']) . '"><i class="far fa-eye"></i></a></li>
-                                    <li><a class="btn btn-success text-white mt-2" href="shop-single.php?id=' . intval($produto['id_produto']) . '"><i class="fas fa-cart-plus"></i></a></li>
-                                </ul>
+            if($view == 'list') {
+                // Visualização em lista
+                echo '<div class="col-12 mb-3">
+                        <div class="card flex-row align-items-center p-2">
+                            <img class="img-fluid" src="assets/img/product_1.jpg" style="width:100px; height:100px; object-fit:cover;">
+                            <div class="card-body d-flex flex-column flex-md-row justify-content-between align-items-md-center w-100">
+                                <div>
+                                    <a href="shop-single.php?id=' . intval($produto['id_produto']) . '" class="h5 text-decoration-none">' . htmlspecialchars($nome_produto) . '</a>
+                                    <p class="mb-1">' . htmlspecialchars($descricao) . '</p>
+                                    <ul class="list-inline mb-1">' . $tamanhos_disponiveis . '</ul>
+                                </div>
+                                <div class="text-right">
+                                    <p class="mb-1 font-weight-bold" style="font-size:1.2em; color:#4CAF50;">€' . number_format(floatval($produto['preco']), 2, ',', '.') . '</p>
+                                    <a class="btn btn-success text-white" href="shop-single.php?id=' . intval($produto['id_produto']) . '"><i class="fas fa-cart-plus"></i> ' . ($_SESSION['ling'] == 'pt' ? 'Comprar' : 'Buy') . '</a>
+                                </div>
                             </div>
                         </div>
-                        <div class="card-body">
-                            <a href="shop-single.php?id=' . intval($produto['id_produto']) . '" class="h3 text-decoration-none">' . htmlspecialchars($nome_produto) . '</a>
-                            <ul class="w-100 list-unstyled d-flex justify-content-between mb-0">
-                                <li>' . $tamanhos_disponiveis . '</li>
-                            </ul>
-                            <p class="text-center mb-0">€' . number_format(floatval($produto['preco']), 2, ',', '.') . '</p>
+                    </div>';
+            } else {
+                // Visualização em mosaico (grid)
+                echo '<div class="col-md-4">
+                        <div class="card mb-4 product-wap rounded-0">
+                            <div class="card rounded-0">
+                                <img class="card-img rounded-0 img-fluid" src="assets/img/product_1.jpg">
+                                <div class="card-img-overlay rounded-0 product-overlay d-flex align-items-center justify-content-center">
+                                    <ul class="list-unstyled">
+                                        <li><a class="btn btn-success text-white" href="shop-single.php?id=' . intval($produto['id_produto']) . '"><i class="far fa-heart"></i></a></li>
+                                        <li><a class="btn btn-success text-white mt-2" href="shop-single.php?id=' . intval($produto['id_produto']) . '"><i class="far fa-eye"></i></a></li>
+                                        <li><a class="btn btn-success text-white mt-2" href="shop-single.php?id=' . intval($produto['id_produto']) . '"><i class="fas fa-cart-plus"></i></a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <a href="shop-single.php?id=' . intval($produto['id_produto']) . '" class="h3 text-decoration-none">' . htmlspecialchars($nome_produto) . '</a>
+                                <ul class="w-100 list-unstyled d-flex justify-content-between mb-0">
+                                    <li>' . $tamanhos_disponiveis . '</li>
+                                </ul>
+                                <p class="text-center mb-0">€' . number_format(floatval($produto['preco']), 2, ',', '.') . '</p>
+                            </div>
                         </div>
-                    </div>
-                </div>';
+                    </div>';
+            }
         }
     }
 } else {
@@ -206,6 +241,29 @@ echo '</div>
             </div>
         </div>
     </div>';
+
+// CSS extra para visualização
+?>
+<style>
+.view-toggle a svg {
+    vertical-align: middle;
+    transition: filter 0.2s;
+}
+.view-toggle a.active svg {
+    filter: drop-shadow(0 0 2px #003c3c);
+}
+.view-toggle a {
+    opacity: 0.7;
+    transition: opacity 0.2s;
+}
+.view-toggle a.active {
+    opacity: 1;
+}
+.card.flex-row {
+    flex-direction: row !important;
+}
+</style>
+<?php
 
 include 'footer.inc.php';
 echo '</body>';
