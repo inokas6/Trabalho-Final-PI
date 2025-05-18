@@ -21,7 +21,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             exit();
         }
     }
-    $error = "Usuário ou senha inválidos";
+    $error = "utilizador ou senha inválidos";
 }
 ?>
 <!DOCTYPE html>
@@ -38,13 +38,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             <div class="col-md-6 col-lg-4">
                 <div class="card shadow">
                     <div class="card-body">
-                        <h3 class="text-center mb-4">Login Administrativo</h3>
+                        <h3 class="text-center mb-4">Login </h3>
                         <?php if (isset($error)): ?>
                             <div class="alert alert-danger"><?php echo $error; ?></div>
                         <?php endif; ?>
                         <form method="POST">
                             <div class="mb-3">
-                                <label for="username" class="form-label">Usuário</label>
+                                <label for="username" class="form-label">Utilizador</label>
                                 <input type="text" class="form-control" id="username" name="username" required>
                             </div>
                             <div class="mb-3">

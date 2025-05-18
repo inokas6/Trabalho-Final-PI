@@ -2,7 +2,7 @@
 session_start();
 require_once '../config/database.php';
 
-// Verificar se o usuário está logado
+// Verificar se o utilizador está logado
 if (!isset($_SESSION['user_id'])) {
     header('Location: login.php');
     exit();
@@ -51,7 +51,7 @@ if (!isset($_SESSION['user_id'])) {
                         <a class="nav-link" href="contato.php">Contato</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="usuarios.php">Usuários</a>
+                        <a class="nav-link" href="utilizadors.php">utilizadors</a>
                     </li>
                 </ul>
                 <ul class="navbar-nav ms-auto">
@@ -65,15 +65,15 @@ if (!isset($_SESSION['user_id'])) {
 
     <div class="container mt-4">
         <h1>Bem-vindo ao Painel Administrativo</h1>
-        <p class="lead">Selecione uma opção no menu acima para gerenciar o conteúdo do site.</p>
+        <p class="lead">Selecione uma opção no menu acima para Controlar o conteúdo do site.</p>
 
         <div class="row mt-4">
             <div class="col-md-4 mb-4">
                 <div class="card">
                     <div class="card-body">
                         <h5 class="card-title">Categorias</h5>
-                        <p class="card-text">Gerencie as categorias de produtos.</p>
-                        <a href="categorias.php" class="btn btn-primary">Gerenciar Categorias</a>
+                        <p class="card-text">Controle as categorias de produtos.</p>
+                        <a href="categorias.php" class="btn btn-primary">Controlar Categorias</a>
                     </div>
                 </div>
             </div>
@@ -81,8 +81,8 @@ if (!isset($_SESSION['user_id'])) {
                 <div class="card">
                     <div class="card-body">
                         <h5 class="card-title">Produtos</h5>
-                        <p class="card-text">Gerencie os produtos da loja.</p>
-                        <a href="produtos.php" class="btn btn-primary">Gerenciar Produtos</a>
+                        <p class="card-text">Controle os produtos da loja.</p>
+                        <a href="produtos.php" class="btn btn-primary">Controlar Produtos</a>
                     </div>
                 </div>
             </div>
@@ -90,8 +90,8 @@ if (!isset($_SESSION['user_id'])) {
                 <div class="card">
                     <div class="card-body">
                         <h5 class="card-title">Tamanhos</h5>
-                        <p class="card-text">Gerencie os tamanhos disponíveis.</p>
-                        <a href="tamanhos.php" class="btn btn-primary">Gerenciar Tamanhos</a>
+                        <p class="card-text">Controle os tamanhos disponíveis.</p>
+                        <a href="tamanhos.php" class="btn btn-primary">Controlar Tamanhos</a>
                     </div>
                 </div>
             </div>
@@ -99,8 +99,8 @@ if (!isset($_SESSION['user_id'])) {
                 <div class="card">
                     <div class="card-body">
                         <h5 class="card-title">Tipos</h5>
-                        <p class="card-text">Gerencie os tipos de produtos.</p>
-                        <a href="tipos.php" class="btn btn-primary">Gerenciar Tipos</a>
+                        <p class="card-text">Controle os tipos de produtos.</p>
+                        <a href="tipos.php" class="btn btn-primary">Controlar Tipos</a>
                     </div>
                 </div>
             </div>
@@ -108,8 +108,8 @@ if (!isset($_SESSION['user_id'])) {
                 <div class="card">
                     <div class="card-body">
                         <h5 class="card-title">Slides</h5>
-                        <p class="card-text">Gerencie os slides da página inicial.</p>
-                        <a href="slides.php" class="btn btn-primary">Gerenciar Slides</a>
+                        <p class="card-text">Controle os slides da página inicial.</p>
+                        <a href="slides.php" class="btn btn-primary">Controlar Slides</a>
                     </div>
                 </div>
             </div>
@@ -117,8 +117,8 @@ if (!isset($_SESSION['user_id'])) {
                 <div class="card">
                     <div class="card-body">
                         <h5 class="card-title">Menus</h5>
-                        <p class="card-text">Gerencie os itens do menu.</p>
-                        <a href="menus.php" class="btn btn-primary">Gerenciar Menus</a>
+                        <p class="card-text">Controle os itens do menu.</p>
+                        <a href="menus.php" class="btn btn-primary">Controlar Menus</a>
                     </div>
                 </div>
             </div>
@@ -126,8 +126,8 @@ if (!isset($_SESSION['user_id'])) {
                 <div class="card">
                     <div class="card-body">
                         <h5 class="card-title">Sobre Nós</h5>
-                        <p class="card-text">Gerencie o conteúdo da página Sobre Nós.</p>
-                        <a href="sobre.php" class="btn btn-primary">Gerenciar Sobre Nós</a>
+                        <p class="card-text">Controle o conteúdo da página Sobre Nós.</p>
+                        <a href="sobre.php" class="btn btn-primary">Controlar Sobre Nós</a>
                     </div>
                 </div>
             </div>
@@ -135,17 +135,17 @@ if (!isset($_SESSION['user_id'])) {
                 <div class="card">
                     <div class="card-body">
                         <h5 class="card-title">Contato</h5>
-                        <p class="card-text">Gerencie o conteúdo da página de contato.</p>
-                        <a href="contato.php" class="btn btn-primary">Gerenciar Contato</a>
+                        <p class="card-text">Controle o conteúdo da página de contato.</p>
+                        <a href="contato.php" class="btn btn-primary">Controlar Contato</a>
                     </div>
                 </div>
             </div>
             <div class="col-md-4 mb-4">
                 <div class="card">
                     <div class="card-body">
-                        <h5 class="card-title">Usuários</h5>
-                        <p class="card-text">Gerencie os usuários do sistema.</p>
-                        <a href="usuarios.php" class="btn btn-primary">Gerenciar Usuários</a>
+                        <h5 class="card-title">utilizadors</h5>
+                        <p class="card-text">Controle os utilizadors do sistema.</p>
+                        <a href="utilizadors.php" class="btn btn-primary">Controlar utilizadors</a>
                     </div>
                 </div>
             </div>

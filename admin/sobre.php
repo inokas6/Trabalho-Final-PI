@@ -2,7 +2,7 @@
 session_start();
 require_once '../config/database.php';
 
-// Verificar se o usuário está logado
+// Verificar se o utilizador está logado
 if (!isset($_SESSION['user_id'])) {
     header('Location: login.php');
     exit();
@@ -58,7 +58,7 @@ $result = $conn->query($sql);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gerenciar Sobre Nós - Green Shop Admin</title>
+    <title>Controlar Sobre Nós - Green Shop Admin</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
@@ -107,7 +107,7 @@ $result = $conn->query($sql);
 
     <div class="container mt-4">
         <div class="d-flex justify-content-between align-items-center mb-4">
-            <h1>Gerenciar Sobre Nós</h1>
+            <h1>Controlar Sobre Nós</h1>
             <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#sobreModal">
                 <i class="fas fa-plus"></i> Novo Conteúdo
             </button>

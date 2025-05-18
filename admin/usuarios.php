@@ -2,7 +2,7 @@
 session_start();
 require_once '../config/database.php';
 
-// Verificar se o usuário está logado
+// Verificar se o utilizador está logado
 if (!isset($_SESSION['user_id'])) {
     header('Location: login.php');
     exit();
@@ -11,14 +11,14 @@ if (!isset($_SESSION['user_id'])) {
 // Processar exclusão
 if (isset($_GET['delete'])) {
     $id = (int)$_GET['delete'];
-    // Não permitir excluir o próprio usuário
+    // Não permitir excluir o próprio utilizador
     if ($id != $_SESSION['user_id']) {
         $sql = "DELETE FROM users WHERE id = ?";
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("i", $id);
         $stmt->execute();
     }
-    header('Location: usuarios.php');
+    header('Location: utilizadors.php');
     exit();
 }
 
@@ -52,11 +52,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
     
     $stmt->execute();
-    header('Location: usuarios.php');
+    header('Location: utilizadors.php');
     exit();
 }
 
-// Buscar usuários
+// Buscar utilizadors
 $sql = "SELECT * FROM users ORDER BY id";
 $result = $conn->query($sql);
 ?>
@@ -65,7 +65,7 @@ $result = $conn->query($sql);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gerenciar Usuários - Green Shop Admin</title>
+    <title>Controlar utilizadors - Green Shop Admin</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
@@ -114,9 +114,9 @@ $result = $conn->query($sql);
 
     <div class="container mt-4">
         <div class="d-flex justify-content-between align-items-center mb-4">
-            <h1>Gerenciar Usuários</h1>
-            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#usuarioModal">
-                <i class="fas fa-plus"></i> Novo Usuário
+            <h1>Controlar utilizadors</h1>
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#utilizadorModal">
+                <i class="fas fa-plus"></i> Novo utilizador
             </button>
         </div>
 
@@ -125,7 +125,7 @@ $result = $conn->query($sql);
                 <thead>
                     <tr>
                         <th>ID</th>
-                        <th>Nome de Usuário</th>
+                        <th>Nome de utilizador</th>
                         <th>Idioma</th>
                         <th>Ações</th>
                     </tr>
@@ -137,11 +137,11 @@ $result = $conn->query($sql);
                         <td><?php echo htmlspecialchars($row['username']); ?></td>
                         <td><?php echo htmlspecialchars($row['ling']); ?></td>
                         <td>
-                            <button class="btn btn-sm btn-primary" onclick="editUsuario(<?php echo htmlspecialchars(json_encode($row)); ?>)">
+                            <button class="btn btn-sm btn-primary" onclick="editutilizador(<?php echo htmlspecialchars(json_encode($row)); ?>)">
                                 <i class="fas fa-edit"></i>
                             </button>
                             <?php if ($row['id'] != $_SESSION['user_id']): ?>
-                            <a href="?delete=<?php echo $row['id']; ?>" class="btn btn-sm btn-danger" onclick="return confirm('Tem certeza que deseja excluir este usuário?')">
+                            <a href="?delete=<?php echo $row['id']; ?>" class="btn btn-sm btn-danger" onclick="return confirm('Tem certeza que deseja excluir este utilizador?')">
                                 <i class="fas fa-trash"></i>
                             </a>
                             <?php endif; ?>
@@ -154,18 +154,18 @@ $result = $conn->query($sql);
     </div>
 
     <!-- Modal -->
-    <div class="modal fade" id="usuarioModal" tabindex="-1">
+    <div class="modal fade" id="utilizadorModal" tabindex="-1">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Usuário</h5>
+                    <h5 class="modal-title">utilizador</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <form method="POST">
                     <div class="modal-body">
-                        <input type="hidden" name="id" id="usuario_id">
+                        <input type="hidden" name="id" id="utilizador_id">
                         <div class="mb-3">
-                            <label for="username" class="form-label">Nome de Usuário</label>
+                            <label for="username" class="form-label">Nome de utilizador</label>
                             <input type="text" class="form-control" id="username" name="username" required>
                         </div>
                         <div class="mb-3">
@@ -192,12 +192,12 @@ $result = $conn->query($sql);
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        function editUsuario(usuario) {
-            document.getElementById('usuario_id').value = usuario.id;
-            document.getElementById('username').value = usuario.username;
+        function editutilizador(utilizador) {
+            document.getElementById('utilizador_id').value = utilizador.id;
+            document.getElementById('username').value = utilizador.username;
             document.getElementById('password').value = ''; // Limpar campo de senha
-            document.getElementById('ling').value = usuario.ling;
-            new bootstrap.Modal(document.getElementById('usuarioModal')).show();
+            document.getElementById('ling').value = utilizador.ling;
+            new bootstrap.Modal(document.getElementById('utilizadorModal')).show();
         }
     </script>
 </body>
